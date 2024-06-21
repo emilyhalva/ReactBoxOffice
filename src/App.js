@@ -66,7 +66,7 @@ export default function App() {
       <nav className="nav-bar">
         <div className="logo">
           <span role="img">🍿</span>
-          <h1>usePopcorn</h1>
+          <h1>React Box Office</h1>
         </div>
         <input
           className="search"
@@ -81,6 +81,7 @@ export default function App() {
       </nav>
 
       <main className="main">
+        {/* Display search results on left side*/}
         <div className="box">
           <button
             className="btn-toggle"
@@ -105,7 +106,7 @@ export default function App() {
             </ul>
           )}
         </div>
-
+        {/* Display list watched movies on right side*/}
         <div className="box">
           <button
             className="btn-toggle"
