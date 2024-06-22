@@ -18,7 +18,11 @@ const textStyle = {
 };
 
 //Creating a reusable StarRating component where the user can pass the maxRating as a prop and choose maxRating. Default is 5.
-export default function StarRating({ maxRating = 5 }) {
+export default function StarRating({
+  maxRating = 5,
+  color = "#fcc419",
+  size = "48px",
+}) {
   const [rating, setRating] = useState(0);
   const [tempRating, setTempRating] = useState(0);
 
