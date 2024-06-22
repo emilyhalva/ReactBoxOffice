@@ -19,7 +19,8 @@ const textStyle = {
 
 //Creating a reusable StarRating component where the user can pass the maxRating as a prop and choose maxRating. Default is 5.
 export default function StarRating({ maxRating = 5 }) {
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [tempRating, setTempRating] = useState(0);
 
   function handleRating(rating) {
     setRating(rating);
@@ -32,13 +33,15 @@ export default function StarRating({ maxRating = 5 }) {
           <Star
             key={i}
             onRate={() => handleRating(i + 1)}
+            onHoverIn={() => setTempRating(i + 1)}
+            onHoverOut={() => setTempRating(0)}
             // Check if a star has been clicked or not
-            full={rating >= i + 1}
+            full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
           />
         ))}
       </div>
       {/*Display rating, if rating is not calculated yet display nothing */}
-      <p style={textStyle}>{rating || ""}</p>
+      <p style={textStyle}>{tempRating || rating || ""}</p>
     </div>
   );
 }
@@ -50,9 +53,15 @@ const starStyle = {
   cursor: "pointer",
 };
 
-function Star({ onRate, full }) {
+function Star({ onRate, full, onHoverIn, onHoverOut }) {
   return (
-    <span role="button" style={starStyle} onClick={onRate}>
+    <span
+      role="button"
+      style={starStyle}
+      onClick={onRate}
+      onMouseEnter={onHoverIn}
+      onMouseLeave={onHoverOut}
+    >
       {/* Dynamically fill or unfill the star based on the full prop */}
       {full ? (
         <svg
@@ -81,32 +90,3 @@ function Star({ onRate, full }) {
     </span>
   );
 }
-
-/*
-SPACING SYSTEM (px)
-2 / 4 / 8 / 12 / 16 / 24 / 32 / 40 / 48 / 64 / 80 / 96 / 128
-
-FONT SIZE SYSTEM (px)
-10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 /52 / 62 / 74 / 86 / 98
-*/
-
-/*
-FULL STAR
-
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 20 20"
-  fill="#000"
-  stroke="#000"
->
-  <path
-    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-  />
-</svg>
-
-
-EMPTY STAR
-
-
-
-*/
