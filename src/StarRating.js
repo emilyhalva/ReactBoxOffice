@@ -1,5 +1,5 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 //Flex lays divs side by side, alignItems will center them vertically, gap will add space between them
 const containerStyle = {
