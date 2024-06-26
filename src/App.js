@@ -54,7 +54,7 @@ const average = (arr) =>
 const KEY = "69f0a71b";
 
 export default function App() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("barbie");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -106,6 +106,14 @@ export default function App() {
           setIsLoading(false);
         }
       }
+
+      //If the user has not entered a title at least 2 characters, set movies to an empty array and reset the error state
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+
       fetchMovies();
     },
     [query]
