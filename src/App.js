@@ -58,7 +58,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "goodfellas";
+  const query = "mdkdk";
 
   //Fetch movies from omdb api when component mounts. Await the response and set the movies state
   useEffect(function () {
@@ -70,11 +70,13 @@ export default function App() {
         );
 
         //If user disconnects from the internet or the server is down, throw an error
-        if (!res.ok) {
+        if (!res.ok)
           throw new Error("Something went wrong with fetching movies");
-        }
 
         const data = await res.json();
+        //If the search query returns no results, throw an error.
+        if (data.Response === "False") throw new Error("Movie not found.");
+
         setMovies(data.Search);
         setIsLoading(false);
       } catch (err) {
