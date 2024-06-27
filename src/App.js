@@ -349,6 +349,21 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     },
     [selectedId]
   );
+
+  //Change webpage title based on selected movie. Effect is executed when a new title is chosen
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `${title} - React Box Office`;
+
+      //Clean up function to reset the title to default when the component is unmounted
+      return function () {
+        document.title = "React Box Office";
+        console.log(`cleanup of ${title}`);
+      };
+    },
+    [title]
+  );
   return (
     <div className="details">
       {isLoading ? (
@@ -422,11 +437,11 @@ function WatchedSummary({ watched }) {
         </p>
         <p>
           <span>⭐️</span>
-          <span>{avgImdbRating}</span>
+          <span>{avgImdbRating.toFixed(2)}</span>
         </p>
         <p>
           <span>🌟</span>
-          <span>{avgUserRating}</span>
+          <span>{avgUserRating.toFixed(2)}</span>
         </p>
         <p>
           <span>⏳</span>
