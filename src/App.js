@@ -59,7 +59,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const tempQuery = "interstellar";
+  const [selectedId, setSelectedId] = useState(null);
 
   // useEffect(function () {
   //   console.log("After initial render");
@@ -77,6 +77,10 @@ export default function App() {
   //   },
   //   [query]
   // );
+
+  function handleSelectMovie(id) {
+    setSelectedId(id);
+  }
 
   //Fetch movies from omdb api when component mounts. Await the response and set the movies state
   useEffect(
@@ -99,6 +103,7 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not found.");
 
           setMovies(data.Search);
+          // console.log(data.Search);
         } catch (err) {
           console.error(err.message);
           setError(err.message);
@@ -129,13 +134,22 @@ export default function App() {
         <Box>
           {/*isLoading ? <Loader /> : <MoviesList movies={movies} />*/}
           {isLoading && <Loader />}
-          {!isLoading && !error && <MoviesList movies={movies} />}
+          {!isLoading && !error && (
+            <MoviesList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+          {/* Display movie details if there is a selectedId, otherwise display watched list */}
+          {selectedId ? (
+            <MovieDetails selectedId={selectedId} />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
@@ -235,20 +249,20 @@ function Box({ children }) {
 //   );
 // }
 
-function MoviesList({ movies }) {
+function MoviesList({ movies, onSelectMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
       ))}
     </ul>
   );
 }
 
 //Individual movie
-function Movie({ movie }) {
+function Movie({ movie, onSelectMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -259,6 +273,10 @@ function Movie({ movie }) {
       </div>
     </li>
   );
+}
+
+function MovieDetails({ selectedId }) {
+  return <div className="details">{selectedId}</div>;
 }
 
 function WatchedSummary({ watched }) {
