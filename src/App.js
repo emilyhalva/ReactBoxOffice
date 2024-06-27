@@ -56,7 +56,7 @@ const average = (arr) =>
 const KEY = "69f0a71b";
 
 export default function App() {
-  const [query, setQuery] = useState("barbie");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,16 +96,21 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
   //Fetch movies from omdb api when component mounts. Await the response and set the movies state
   useEffect(
     function () {
+      //Used in the cleanup function to control fetch requests so we aren't finishing requests after every key stroke
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           //Before fetching, reset the error state
           setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           //If user disconnects from the internet or the server is down, throw an error
@@ -117,10 +122,13 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not found.");
 
           setMovies(data.Search);
-          // console.log(data.Search);
+          setError("");
         } catch (err) {
-          console.error(err.message);
-          setError(err.message);
+          console.log(err.message);
+
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -133,7 +141,14 @@ export default function App() {
         return;
       }
 
+      //Close current movie if searching another movie
+      handleCloseMovie();
+
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -333,6 +348,24 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
+  //Close movie details when the escape key is pressed
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
+
+      document.addEventListener("keydown", callback);
+
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onCloseMovie]
+  );
+
   //Load movie details about individual movie every time a new selectedId is passed
   useEffect(
     function () {
@@ -359,7 +392,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       //Clean up function to reset the title to default when the component is unmounted
       return function () {
         document.title = "React Box Office";
-        console.log(`cleanup of ${title}`);
+        // console.log(`cleanup of ${title}`);
       };
     },
     [title]
